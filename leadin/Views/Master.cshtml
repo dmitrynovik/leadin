@@ -22,7 +22,7 @@
 	
     <!-- CSS -->
     <link rel="stylesheet" type="text/css" href="/css/bootstrap.min.css">
-    <link rel="stylesheet" type="text/css" href="/css/fanoe.css">
+    <link rel="stylesheet" type="text/css" href="/css/leadin.css">
     <link rel="stylesheet" type="text/css" href="/css/style.css">
 
     <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
@@ -35,11 +35,11 @@
 
   <body>
     <header>
-      <div class="container">
+      <div class="container white">
         <div class="row">
           <div class="col-xs-8 col-sm-12 col-md-4">
 			<a href="@home.Url">
-            	<div class="brand" style="background-image:url('@(home.SiteLogo)?height=65&width=205&bgcolor=000')"></div>
+            	<div class="brand" style="background-image:url('@(home.SiteLogo)?height=65&width=205')"></div>
 			</a>
           </div>
           <div class="col-sm-12 col-md-8">
@@ -60,7 +60,7 @@
     @RenderBody()
 
     <footer class="field dark">
-      <div class="container">
+      <div class="container offset-top">
         <div class="row">
 			
 		  @{ Html.RenderPartial("BottomNavigation"); }
