@@ -4,4 +4,5 @@
 App_Data/TEMP
 App_Data/cache
 Logs/
+cache/
 *.dll
