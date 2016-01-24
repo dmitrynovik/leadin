@@ -1163,8 +1163,8 @@ nav > ul li {
 nav > ul li a,
 nav > ul li span {
 	font-size: 15px;
-/* 	text-transform: uppercase;
- */}
+	text-transform: uppercase;
+}
 
 /*
 nav > ul li:last-child a {
@@ -1185,7 +1185,7 @@ nav li > ul {
 }
 
 nav li > ul li a {
-	padding: 8px 15px;
+	padding: 8px 20px;
 	font-size: 15px;
 	color: rgba(0, 0, 0, 1);
 }

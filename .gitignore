@@ -1,4 +1,7 @@
 [Bb]in/
 [Pp]ackages/
 [Oo]bj/
+App_Data/TEMP
+App_Data/cache
+Logs/
 *.dll
