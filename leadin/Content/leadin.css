@@ -201,6 +201,7 @@ html {
 .dark a:hover,
 .dark a:visited:hover {
 	text-decoration: underline;
+	color: :hover;
 }
 
 .dark a.button {
@@ -750,7 +751,11 @@ nav li > ul li a {
 }
 
 nav li > ul li a:hover {
-	color: blue; #hover menu item;
+	color: white; #hover menu item;
+}
+
+nav li > ul li:hover {
+	background-color: #4080ff;
 }
 
 nav li > ul > li > ul {
@@ -950,10 +955,10 @@ footer.dark a {
 }
 
 footer.dark a:hover {
-	color: rgba(0, 0, 0, 0.9) !important;
+	color: rgba(0, 0, 1, 0.9) !important;
 	border-bottom: 1px solid #fff !important;
 	padding-bottom: 3px;
-	text-decoration: none;
+	text-decoration: underline;
 }
 
 ul {
