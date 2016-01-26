@@ -1,0 +1,30 @@
+@using umbraco.MacroEngines
+@inherits DynamicNodeContext
+@{
+    // Get all child items based on the 'CWS_Gallery' nd group them is 3
+    <div class="galleryGrid clearfix">
+    @foreach (var group in @Model.CWS_Gallery.InGroupsOf(3))
+    {
+        foreach (var item in group)
+        {
+            // find you whether is the first item of the group and set the css class
+            var itemClass = item.IsFirst("first item left", "item left");
+
+            // If there is not photo, fallback to the placeholder
+            var src = @item.GalleryThumbnail ?? "/images/Placeholders/gallery_placeholder.gif";
+
+            // Ge the photo text
+            var count = @item.CWS_Photo.Count();
+            var photoText = count > 1 ? " Photos" : " Photo";
+            
+            <div class="@itemClass">
+                <a href="@item.Url"><img src="@src" alt="@item.Name"/>@item.Name</a>
+                <span>@count @photoText</span>
+            </div>
+        }
+
+        // Clear after each group of 3
+        <div class="clearBoth">&nbsp;</div>
+    }
+    </div>
+}

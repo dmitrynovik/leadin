@@ -1,0 +1,17 @@
+@using umbraco.MacroEngines
+@inherits DynamicNodeContext
+@{
+    @Model.AncestorsOrSelf().First().SiteName
+    if (@Model.Level > 1)
+    {
+        const string separator = " - ";
+        @separator
+        var ancestors = @Model.Ancestors().Where("Visible").Where("Level > 1");
+        foreach (var level in ancestors)
+        {
+            @level.Name @separator
+        }
+    
+        @Model.Name
+    }
+}

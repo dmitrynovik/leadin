@@ -1,0 +1,22 @@
+@using umbraco.MacroEngines
+@inherits DynamicNodeContext
+@{
+    // Root Node
+    var root = @Model.AncestorOrSelf();
+    var level = String.IsNullOrEmpty(Parameter.Level) ? 1 : int.Parse(Parameter.Level);
+    var parent = @Model.AncestorOrSelf(level);
+    <nav id="navi" role="navigation">
+        <ul>
+            @*Add the class selected if the root node ID matches our current node ID in the for each loop*@
+            @{ var homeSelected = @Model.Level == 1 ? " class=\"selected\"" : string.Empty; }
+            <li@Html.Raw(homeSelected)><a href="@root.Url">@root.Name</a></li>
+		    @foreach (var item in parent.Children.Where("Visible"))
+            {
+                // Add the class selected if the currentpage or parent nodes (up the tree to the root)
+                // ID matches our current node ID in the for each loop
+                var selected = Array.IndexOf(Model.Path.Split(','), item.Id.ToString()) >= 0 ? " class=\"selected\"" : string.Empty;
+                <li@Html.Raw(selected)><a href="@item.Url">@item.Name</a></li>
+            }
+        </ul>
+    </nav>
+}

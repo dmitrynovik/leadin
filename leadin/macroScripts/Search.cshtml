@@ -1,0 +1,116 @@
+@using Examine
+@using System.Text.RegularExpressions
+@using umbraco.MacroEngines
+@inherits DynamicNodeContext
+@{
+    // retrieve the search term from the query string
+    var searchTerm = Request.QueryString["search"];
+    
+    // Get the searcher from examine
+    var searcher = ExamineManager.Instance.SearchProviderCollection["CWSSearcher"];
+    
+    // Do the search
+    var results = searcher.Search(searchTerm, true);
+    
+    <div id="search">
+        <h2 class="flashHeader"><strong>Search Results</strong></h2>
+        @ShowSummary(results, searchTerm)
+        <div id="search_results">
+        @foreach (var result in results)
+        {
+            @DisplaySearchResult(result, searchTerm) 
+        }
+        </div>
+    </div>
+}
+
+@helper ShowSummary(ISearchResults results, string searchTerm)
+{
+    var count = results.Count();
+    <p id="search_summary">
+    @switch (count)
+    {
+        case 0:
+            @Html.Raw("No matches were found for ") <strong>@searchTerm</strong>
+            break;
+        case 1:
+            @Html.Raw("Your search for ")<strong>@searchTerm</strong>@Html.Raw(" matches ")<strong>1</strong>@Html.Raw(" page")
+            break;
+        default:
+            @Html.Raw("Your search for ")<strong>@searchTerm</strong>@Html.Raw(" matches ")<strong>@count</strong>@Html.Raw(" pages")
+            break;
+    }
+    </p>
+}
+
+@helper DisplaySearchResult(SearchResult result, string searchTerm)
+{
+    // Initialize title and description
+    var title = string.Empty;
+    var description = string.Empty;
+
+    // Get the nodeTypeAlias and based on this, set the title and description
+    var nodeTypeAlias = result.Fields["nodeTypeAlias"];
+    switch(nodeTypeAlias)
+    {
+        case "CWS_Home":
+        case "CWS_Textpage":
+            title = result.Fields["headerText"];
+            description = result.Fields["bodyText"];
+            break;
+        case "CWS_NewsItem":
+        case "CWS_EventItem":
+            title = result.Fields["nodeName"];
+            description = result.Fields["bodyText"];
+            break;
+        case "CWS_TextpageTwoCol":
+            title = result.Fields["headerText"];
+            description = string.Concat(result.Fields["bodyTextColOne"], result.Fields["bodyTextColTwo"]);
+            break;
+    }
+
+    // Format the description
+    description = FormatText(description, searchTerm);
+    
+    // Get the item url
+    var url = Library.NodeById(result.Fields["id"]).Url;
+
+    <div class="search_result">
+        <p class="search_result_title">
+            <a href="@url" class="search_title">@title</a>
+        </p>
+        <p class="search_result_description">
+            <span class="search_description">@Html.Raw(description)</span>
+        </p>
+    </div>
+    
+}
+
+@functions
+{
+    static string FormatText(string text, string matchCase)
+    {
+        if (string.IsNullOrEmpty(text) || string.IsNullOrEmpty(matchCase))
+        {
+            return string.Empty;
+        }
+
+        var regex = new Regex(string.Format(@"({0})", matchCase), RegexOptions.IgnoreCase);
+        string[] sentences = regex.Split(text);
+        if (sentences.Length > 2 && !sentences[0].Equals(matchCase))
+        {
+            if (sentences[0].Length > 60)
+            {
+                text = "... " + text.Remove(0, sentences[0].Length - 40);
+            }
+        }
+
+        if (text.Length > 200)
+        {
+            text = text.Substring(0, 200) + " ...";
+        }
+
+        text = regex.Replace(text, string.Format("<strong>{0}</strong>", matchCase));
+        return text;
+    }
+}

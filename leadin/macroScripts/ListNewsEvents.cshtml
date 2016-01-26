@@ -1,0 +1,30 @@
+@using umbraco.MacroEngines
+@inherits DynamicNodeContext
+@{
+    // Max number of characters
+    const int maxNoChars = 100;
+
+    // Get all child items based on the document type 'CWS_NewsItem' and group them is 3
+    <div class="newsList clearfix">
+    @foreach (var group in @Model.Children.InGroupsOf(3))
+    {
+        foreach (var item in group)
+        {
+            // find you whether is the first item of the group and set the css class
+            var itemClass = item.IsFirst("first left", "left");
+
+            // Get the EventDate or the CreateDate based on the NodeTypeAlias
+            var date = @item.NodeTypeAlias == "CWS_EventItem" ? @item.EventDate : @item.CreateDate;
+            
+            <div class="@itemClass">
+                <span>@date.ToString("dd.MM.yy")</span>
+                <h4><a href="@item.Url">@item.Name</a></h4>
+                <p>@Library.Truncate(Library.StripHtml(item.BodyText.ToString()), maxNoChars, true)</p>
+            </div>
+        }
+
+        // Clear after each group of 3
+        <div class="clearBoth">&nbsp;</div>
+    }
+    </div>
+}

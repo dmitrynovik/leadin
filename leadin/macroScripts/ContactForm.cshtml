@@ -1,0 +1,149 @@
+@using System.Text
+@using Creative.Website.Starter
+@using umbraco.MacroEngines
+@inherits DynamicNodeContext
+@{
+  dynamic form = Context.Request.Form.ToDynamic();
+  var valDic = new Dictionary<string, string>
+    {
+        {"forgery", "Invalid post"},
+        {"name", "Please enter your name"},
+        {"email", "Please enter a email"},
+        {"email-regex", "Please enter a valid e-mail address"},
+        {"enquiry", "Please enter a message"}
+    };
+
+
+  if (IsPost)
+  {
+    if (!Context.IsValidAntiForgery()) { ModelState.AddFormError(valDic["forgery"]); }
+    if (MainHelper.IsEmpty(form.Name)) { ModelState.AddError("name", valDic["name"]); }
+    if (MainHelper.IsEmpty(form.Name)) { ModelState.AddError("email", valDic["email"]); }
+    if (!MainHelper.IsEmail(form.Email)) { ModelState.AddError("email", valDic["email-regex"]); }
+    if (MainHelper.IsEmpty(form.Enquiry)) { ModelState.AddError("enquiry", valDic["enquiry"]); }
+  }
+
+  if (!IsPost || !ModelState.IsValid)
+  {
+    <form method="post" action="@Node.Url">
+    <div class="clearfix form">
+        <div class="left text">
+            @Html.Raw(library.RemoveFirstParagraphTag(Model.FormText.ToString()))
+            @if (!IsPost && ModelState.IsValid)
+            {
+              // force a ValidationSummary placeholder for client side validation
+              <div class="validation-summary-valid" data-valmsg-summary="true">
+                <ul><li style="display:none"></li></ul>
+              </div>
+            }
+            else
+            {
+                // For use in case cannot validate client side
+                @Html.ValidationSummary(new Dictionary<string, object> { { "data-valmsg-summary", "true" } })
+            }
+
+        </div>
+        <div class="left fields">
+            <fieldset>
+                <legend>Enquiry Form</legend>
+                @Html.Label("Name", "name")
+                @Html.TextBox("name", form.Name, new Dictionary<string, object>
+                              {
+                                  {"class", !ModelState.IsValidField("name") ? "error" : string.Empty},
+                                  {"data-val", "true"},
+                                  {"data-val-required", valDic["name"]}
+                              })
+                <br />
+                @Html.Label("Address", "address1")
+                @Html.TextBox("address1", form.Address1)
+                @Html.Label("Address Line 2", "address2", new { @class = "hide" })
+                @Html.TextBox("address2", form.Address2)
+                <br />
+                @Html.Label("Email Address", "email")
+                @Html.TextBox("email", form.Email, new Dictionary<string, object>
+                                {
+                                    {"class", !ModelState.IsValidField("email") ? "error" : string.Empty},
+                                    {"data-val", "true"},
+                                    {"data-val-regex", valDic["email-regex"]},
+                                    {"data-val-regex-pattern", MainHelper.EmailRegex},
+                                    {"data-val-required", valDic["email"]}
+                                })
+                <br />
+                @Html.Label("Enquiry", "enquiry")
+                @Html.TextArea("enquiry", form.Enquiry, new Dictionary<string, object>
+                                {
+                                    {"rows", 5},
+                                    {"cols", 25},
+                                    {"class", !ModelState.IsValidField("enquiry") ? "error" : string.Empty},
+                                    {"data-val", "true"},
+                                    {"data-val-required", valDic["enquiry"]}
+                                })
+                <br />
+                @Context.GetAntiForgeryHtml()
+                <button id="SubmitForm" type="submit">Submit Enquiry</button>  
+            </fieldset>
+        </div>
+    </div>
+    </form>
+  }
+  else
+  {
+    var ok = LogAndSend(form);
+    if (!ok)
+    {
+            <div id="errorMailSettings">
+                We are sorry but we coould not send the form request. Please contact us at (0) 207 123456789.
+            </div>
+    }
+    else
+    {
+      // Set Thankyou text from our contact node
+            <div id="thankYou">
+                <h2>@Model.ThankYouHeaderText</h2>
+                @Model.ThankYouMessageText
+            </div>
+        }
+    }
+}
+
+@functions 
+{
+  public bool LogAndSend(dynamic form)
+  {
+    // Get the variables from the form and set them in strings
+    string strName = Html.Encode(form.Name);
+    string strAddressLine1 = Html.Encode(form.Address1);
+    string strAddressLine2 = Html.Encode(form.Address2);
+    string strEmailFrom = Html.Encode(form.Email);
+    string strMessage = Library.StripHtml(form.Enquiry).ToString();
+
+    // Log the item to the XML file
+    var filePath = Server.MapPath("~/App_Data/contact_form_log.xml");
+    filePath.LogContactForm(strName, strAddressLine1, strAddressLine2, strEmailFrom, strMessage);
+
+    // Lets set the values passed in from the Macro
+    string strEmailTo = Model.EmailTo.ToString();
+    string strEmailSubject = Model.EmailSubject.ToString();
+    var now = DateTime.Now;
+    var strTime = String.Format("{0:HH:mm:ss}", now);
+    var strDate = String.Format("{0:dd/MM/yyyy}", now);
+
+    // Lets Replace the placeholders in the email message body
+    var strEmailBody = new StringBuilder(Model.EmailBody.ToString());
+    strEmailBody.Replace("[Name]", strName); // Find and Replace [Name]
+    strEmailBody.Replace("[AddressLine1]", strAddressLine1); // Find and Replace [AddressLine1]
+    strEmailBody.Replace("[AddressLine2]", strAddressLine2); // Find and Replace [AddressLine2]
+    strEmailBody.Replace("[Email]", strEmailFrom); // Find and Replace [Email]
+    strEmailBody.Replace("[Message]", strMessage); // Find and Replace [Message]
+    strEmailBody.Replace("[Time]", strTime); // Find and Replace [Time]
+    strEmailBody.Replace("[Date]", strDate); // Find and Replace [Date]
+
+    // Now the email is sent out to the owner, lets send out an email
+    // to let the user know we have recieved their email & will respond shortly
+    string strEmailReplySubject = Model.EmailReplySubject.ToString();
+    var strEmailReplyBody = new StringBuilder(Model.EmailReplyBody.ToString());
+    strEmailReplyBody.Replace("[Name]", strName); // Find and Replace [Name]
+
+    return MainHelper.TrySendMail(strEmailTo, strEmailSubject, strEmailBody.ToString()) && MainHelper.TrySendMail(strEmailFrom, strEmailReplySubject, strEmailReplyBody.ToString());
+  }
+}

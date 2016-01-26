@@ -1,0 +1,149 @@
+@using System.Text
+@using Creative.Website.Starter
+@using umbraco.MacroEngines
+@inherits DynamicNodeContext
+@{
+    dynamic form = Context.Request.Form.ToDynamic();
+
+    if (IsPost)
+    {
+        if (!Context.IsValidAntiForgery()) { ModelState.AddFormError("Invalid post"); }
+        if (MainHelper.IsEmpty(form.FriendsName)) { ModelState.AddError("friendsName", "Please enter your friends name"); }
+        if (!MainHelper.IsEmail(form.FriendsEmail)) { ModelState.AddError("friendsEmail", "Please enter a valid email address for your friend"); }
+        if (MainHelper.IsEmpty(form.YourName)) { ModelState.AddError("yourName", "Please enter your name"); }
+        if (!MainHelper.IsEmail(form.YourEmail)) { ModelState.AddError("yourEmail", "Please enter a valid email address for you"); }
+    }
+
+    if (!IsPost || !ModelState.IsValid)
+    {
+    var action = Context.Request.Url.PathAndQuery;
+    <form method="post" action="@action">
+    <div class="clearfix form">
+        <div class="left text">
+            @LoadMessage()
+            @Html.ValidationSummary("Please review the following errors:", new { @class = "errorMessage" })
+        </div>
+        <div class="left fields">
+            <fieldset>
+                <legend>Friends Details</legend>
+                @Html.Label("Friends Name", "friendsName")
+                @Html.TextBox("friendsName", form.FriendsName, new { @class = !ModelState.IsValidField("friendsName") ? "error" : string.Empty })
+                <br />
+                @Html.Label("Friends Email", "friendsEmail")
+                @Html.TextBox("friendsEmail", form.FriendsEmail, new { @type = "friendsEmail", @class = !ModelState.IsValidField("friendsEmail") ? "error" : string.Empty })
+            </fieldset>
+            <fieldset>
+                <legend>Your Details</legend>
+                @Html.Label("Your name", "yourName")
+                @Html.TextBox("yourName", form.YourName, new { @class = !ModelState.IsValidField("yourName") ? "error" : string.Empty })
+                <br />
+                @Html.Label("Your Email", "yourEmail")
+                @Html.TextBox("yourEmail", form.YourEmail, new { @type = "yourEmail", @class = !ModelState.IsValidField("yourEmail") ? "error" : string.Empty })
+                <br />
+                @Html.Label("Your Message", "yourMessage")
+                @Html.TextArea("yourMessage", form.YourMessage, new { @rows = 5, @cols = 25 })
+                <br />
+                @Context.GetAntiForgeryHtml()
+                <button id="SubmitForm" type="submit">Send to Friend</button>  
+            </fieldset>
+        </div>
+    </div>
+    </form>
+    }
+    else
+    {
+        var ok = LogAndSend(form);
+        if (!ok)
+        {
+            <div id="errorMailSettings">
+                @Model.ErrorMessage
+            </div>
+        }
+        else
+        {
+            // Set Thankyou text from our contact node
+            <div id="thankYou">
+                <h2>@Model.ThankYouHeaderText</h2>
+                @Model.ThankYouMessageText
+            </div>
+        }
+    }
+}
+
+
+@helper LoadMessage()
+{
+    var url = BuildLink();
+    if (!string.IsNullOrEmpty(url))
+    {
+        <p>The page you are sending to your friend is <a href="@url">@url</a></p>
+    }
+    else
+    {
+        <p>The nodeID does not exist. Please go back and try again</p>
+    }
+}
+
+@functions 
+{
+    public string BuildLink()
+    {
+        var nodeId = Context.Request.QueryString["nodeID"];
+        if (string.IsNullOrEmpty(nodeId))
+        {
+            return string.Empty;
+        }
+
+        var node = Library.NodeById(nodeId);
+        if (node.Path != null)
+        {
+            return "http://" + Request.ServerVariables["SERVER_NAME"] + node.Url;
+        }
+
+        return string.Empty;
+    }
+    
+    public bool LogAndSend(dynamic form)
+    {
+        // Get the variables from the form and set them in strings
+        string strUrl = BuildLink();
+        string strFriendsName = Html.Encode(form.FriendsName);
+        string strFriendsEmail = Html.Encode(form.FriendsEmail);
+        string strYourName = Html.Encode(form.YourName);
+        string strYourEmail = Html.Encode(form.YourEmail);
+        string strMessage = Library.StripHtml(form.YourMessage).ToString();
+
+        // Log the item to the XML file
+        var filePath = Server.MapPath("~/App_Data/email_a_friend_form_log.xml");
+        filePath.LogSendToFriendForm(strUrl, strFriendsName, strFriendsEmail, strYourName, strYourEmail, strMessage);
+
+        // Lets set the values passed in from the Macro
+        var now = DateTime.Now;
+        var strTime = String.Format("{0:HH:mm:ss}", now);
+        var strDate = String.Format("{0:dd/MM/yyyy}", now);
+
+        var strEmailSubject = new StringBuilder(Model.EmailSubjectToFriend.ToString());
+        strEmailSubject.Replace("[FriendName]", strFriendsName);
+        strEmailSubject.Replace("[FriendEmail]", strFriendsEmail);
+        strEmailSubject.Replace("[YourName]", strYourName);
+        strEmailSubject.Replace("[YourEmail]", strYourEmail);
+        strEmailSubject.Replace("[Message]", strMessage);
+        strEmailSubject.Replace("[Date]", strDate);
+        strEmailSubject.Replace("[Time]", strTime);
+        strEmailSubject.Replace("[URL]", strUrl);
+
+        // Lets Replace the placeholders in the email message body
+        var strEmailBody = new StringBuilder(Model.EmailMessageToFriend.ToString());
+        strEmailBody.Replace("[FriendName]", strFriendsName); 
+        strEmailBody.Replace("[FriendEmail]", strFriendsEmail);
+        strEmailBody.Replace("[YourName]", strYourName);
+        strEmailBody.Replace("[YourEmail]", strYourEmail);
+        strEmailBody.Replace("[Message]", strMessage);
+        strEmailBody.Replace("[Date]", strDate);
+        strEmailBody.Replace("[Time]", strTime);
+        strEmailBody = strEmailBody.Replace("[URL]", strUrl);
+
+        // Lets setup the SMTP client using settings from web.config
+        return MainHelper.TrySendMail(strFriendsEmail, strEmailSubject.ToString(), strEmailBody.ToString());
+    }
+}

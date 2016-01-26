@@ -1,0 +1,10 @@
+@using umbraco.MacroEngines
+@inherits DynamicNodeContext
+@{
+    // If the current node property PhotoText is NOT empty then
+    // we display a span with the PhotoText property in.
+    if (@Model.HasValue("photoText"))
+    {
+        <span>@Model.PhotoText</span>
+    }
+}

@@ -1,0 +1,59 @@
+﻿@*
+    This class will help you to load all scripts and stylesheets using ClientDependency
+    Paramaters:
+    CssPaths (string) Pipe-separated css . The order how you put them is important
+    JsPaths (string) Pipe-separated js
+    IncludeDefaultPaths (bool, default false) If true, it will prepend ~/css and ~/scripts
+*@
+
+@using ClientDependency.Core
+@using ClientDependency.Core.Controls
+@using Creative.Website.Starter.ClientDependency
+@{
+    var cssPaths = Parameter.CssPaths;
+    var jsPaths = Parameter.JsPaths;
+    bool includeDefaultPaths;
+    bool.TryParse(Parameter.IncludeDefaultPaths, out includeDefaultPaths);
+
+    CdObjects cdPaths = GetClientDependencyPaths(cssPaths, jsPaths, includeDefaultPaths);
+    @Html.Raw(cdPaths.Styles)
+    @Html.Raw(cdPaths.Scripts)
+}
+
+@functions 
+{
+    CdObjects GetClientDependencyPaths(string cssPaths, string jsPaths, bool includeDefaultPaths)
+    {
+        var paths = new HashSet<IClientDependencyPath>
+        {
+            new ClientDependencyPath {Name = "Styles", Path = "~/css"}, 
+            new ClientDependencyPath {Name = "Scripts", Path = "~/scripts"}
+        };
+
+        var allDependencies = new List<IClientDependencyFile>();
+        string cssOutput, jsOutput;
+        int priority;
+
+        if (!string.IsNullOrEmpty(cssPaths))
+        {
+            priority = 0;
+            allDependencies.AddRange(cssPaths.Split('|').Select(path => new CssInclude { PathNameAlias = includeDefaultPaths ? "Styles" : string.Empty, FilePath = path, Priority = priority++ }));
+        }
+
+        if (!string.IsNullOrEmpty(jsPaths))
+        {
+            priority = 0;
+            allDependencies.AddRange(jsPaths.Split('|').Select(path => new JsInclude { PathNameAlias = includeDefaultPaths ? "Scripts" : string.Empty, FilePath = path, Priority = priority++ }));
+        }
+
+        var renderer = new Html5StandardRenderer();
+        renderer.RegisterDependencies(allDependencies, paths, out jsOutput, out cssOutput);
+        return new CdObjects { Styles = cssOutput, Scripts = jsOutput };
+    }
+
+    class CdObjects
+    {
+        public string Styles { get; set; }
+        public string Scripts { get; set; }
+    }
+}

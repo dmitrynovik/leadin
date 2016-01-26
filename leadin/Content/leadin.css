@@ -489,7 +489,6 @@ p,
 blockquote,
 li,
 a {
-	font-size: 1rem;
 	line-height: 1.6;
 	letter-spacing: 0.2px;
 }
@@ -526,7 +525,6 @@ a.button {
 	padding: 8px 18px !important;
 	margin-top: 20px;
 	font-family: sans-serif !important;
-	font-size: 1rem;
 	background: transparent;
 	transition: all .2s ease-in-out;
 }
@@ -950,7 +948,6 @@ footer ul li {
 
 footer.dark a {
 	color: rgba(0, 0, 0, 1) !important;
-	font-size: 1rem;
 	border-bottom: 1px solid transparent;
 	padding-bottom: 3px;
 	font-family: sans-serif;

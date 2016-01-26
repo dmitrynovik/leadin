@@ -28,7 +28,6 @@ else
 
              @using (Html.BeginUmbracoForm<Umbraco.Forms.Web.Controllers.UmbracoFormsController>("HandleForm"))
              {
-                 @*<style scoped>@@import '@Url.Content("~/Content/bootstrap.css")';</style>*@
                  <input type="hidden" name="FormId" value="@Model.FormId" />
                  @Html.HiddenFor(x => Model.FormName)
                  @Html.HiddenFor(x => Model.RecordId)
@@ -37,6 +36,7 @@ else
                  <input type="hidden" name="FormStep" value="@Model.FormStep" />
 
                  <div class="contourPage">
+                     <style scoped>@@import '@Url.Content("~/Content/bootstrap.css")';</style>
                 
                      @if (string.IsNullOrEmpty(Model.CurrentPage.Caption) == false)
                      {

@@ -1,0 +1,7 @@
+@using umbraco.MacroEngines
+@inherits DynamicNodeContext
+@{
+    var parent = @Model.Parent;
+    <a class="leftArrow backLink" href="@parent.Url">@parent.Name</a>
+
+}

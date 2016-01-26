@@ -1,0 +1,8 @@
+@using umbraco.MacroEngines
+@inherits DynamicNodeContext
+@{
+    <form role="search" method="get" action="/CWS_search.aspx" class="right searchBox">
+        @Html.TextBox("search")
+        <button>Search</button>
+    </form>
+}

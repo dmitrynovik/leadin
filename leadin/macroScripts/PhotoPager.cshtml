@@ -1,0 +1,15 @@
+@using umbraco.MacroEngines
+@inherits DynamicNodeContext
+@{
+    <div class="pager clearfix">
+    @if (@Model.Previous() != null)
+    {
+        <a href="@Model.Previous().Url" class="left prev">Previous</a>
+    }
+    @if (@Model.Next() != null)
+    {
+        <a href="@Model.Next().Url" class="right next">Next</a>
+    }
+    </div>
+    
+}

@@ -1,0 +1,116 @@
+@*
+Parameters
+    RssNoItems (int, mandatory)
+    RssTitle (string, mandatory)
+    RssDescription (string, mandatory)
+*@
+
+@using System.ServiceModel.Syndication
+@using System.Text
+@using System.Xml
+@using umbraco.MacroEngines
+@inherits DynamicNodeContext
+@{   
+    // Get the parameters passed by the macro
+    var rssNoItems = Parameter.RssNoItems;
+    var feedTitle = Parameter.RssTitle.ToString();
+    var feedDescription = Parameter.RssDescription.ToString();
+    
+    // Get the root node for News and Event List
+    var root = @Model.CWS_NewsEventsList.First();
+    
+    // Sort the items by CreateDate and limit the number of feeds based on the RssNoItems parameter
+    // Notice that you could sort by "UpdateDate" too
+    var newsEvents = root.Children.OrderBy("CreateDate").Take(int.Parse(rssNoItems));
+
+    // Get the base url to contruct the links for the feeds
+    var baseUrl = new UriBuilder(Context.Request.Url.Scheme, Context.Request.Url.Host).Uri;
+
+    // Find out whether the output is atom, otherwise will display RSS 2.0 format
+    var isAtom = !string.IsNullOrEmpty(Context.Request.QueryString["type"]) && Context.Request.QueryString["type"] == "atom";
+
+    // Let's create a list of Syndication Items
+    var items = new List<SyndicationItem>();
+
+    foreach (var item in newsEvents)
+    {
+        // Get the title of the item. 
+        var title = item.Name.ToString();
+        
+        // Get the content from the body text, strip the HTML-encode the string. 
+        // The SyndicationFeed class will handle the enconding for the content
+        var content = HttpUtility.HtmlDecode(Library.StripHtml(item.BodyText).ToString().Trim());
+        
+        // Create the link based on the baseUrl and the item url
+        var itemAlternateLink = new Uri(baseUrl, item.Url.ToString());
+        
+        // Get the updateDate
+        var updatedTime = DateTime.Parse(item.UpdateDate.ToString());
+
+        // Add the SyndicationItem to the list
+        var syndicationItem = new SyndicationItem(title, content, itemAlternateLink) {Id = itemAlternateLink.AbsoluteUri };
+
+        // Set the PublishDate or LastUpdatedTime based on the information whether
+        // the feed will be a rss or a atom
+        if (isAtom)
+        {
+            syndicationItem.LastUpdatedTime = updatedTime;
+        }
+        else
+        {
+            syndicationItem.PublishDate = updatedTime;
+        }
+        
+        // Add the item
+        items.Add(syndicationItem);
+    }
+
+    // Get the feed link
+    var feedLink = new Uri(baseUrl, Context.Request.RawUrl);
+    
+    // Get the UpdateDate for the first item on the list
+    var feedDate = DateTime.Parse(newsEvents.First().UpdateDate.ToString());
+    
+    // Create the feed
+    var feed = new SyndicationFeed(feedTitle, feedDescription, feedLink, feedLink.AbsoluteUri, feedDate, items);
+
+    // Improved interoperability with feed readers by implementing atom:link with rel="self"
+    feed.Links.Add(SyndicationLink.CreateSelfLink(feedLink));
+
+    // Let's save the content to a MemoryStream. You could use StringWriter too but you will have to deal with UTF-16 encoding
+    using (var ms = new MemoryStream())
+    {   
+        // Ensure the writer is UTF8 and nicely indented
+        using (var writer = new XmlTextWriter(ms, Encoding.UTF8) { Formatting = Formatting.Indented })
+        {
+            // Write <?xml version="1.0" encoding="utf-8"?>
+            writer.WriteStartDocument();
+
+            // Save as atom or as rss
+            if (isAtom)
+            {
+                // This feed won't validate unless you add an author and name
+                feed.Authors.Add(new SyndicationPerson { Name = "Your company" });
+                feed.SaveAsAtom10(writer);
+            }
+            else
+            {
+                feed.SaveAsRss20(writer);
+            }
+        }
+
+        var sb = new StringBuilder(Encoding.UTF8.GetString(ms.ToArray()));
+
+        if (!isAtom)
+        {
+            // Although this feed is valid, interoperability with feed readers could be improved by avoiding Namespace Prefix: a10
+            sb.Replace("xmlns:a10", "xmlns:atom").Replace("a10:", "atom:");
+        }
+                
+        // Ensure the content type is correct
+        Context.Response.ContentType = isAtom ? "application/atom+xml" : "application/rss+xml";
+        
+        // Write the content
+        Context.Response.Write(sb.ToString());
+    }
+}

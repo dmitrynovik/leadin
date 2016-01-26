@@ -1,0 +1,20 @@
+@using umbraco.MacroEngines
+@inherits DynamicNodeContext
+@{
+    var newsEvents = @Model.CWS_NewsEventsList.First();
+    <div class="secondaryNav">
+        <h3>@newsEvents.Name</h3>
+        <ul class="events">
+        @foreach (var item in newsEvents.Children.OrderBy("CreateDate").Take(3))
+        {
+            var date = @item.NodeTypeAlias == "CWS_EventItem" ? @item.EventDate : @item.CreateDate;
+            <li>
+            <a href="@item.Url">
+                <em>@date.ToString("dd.MM.yy")</em>
+                <span>@item.Name</span>
+            </a>
+            </li>
+        }
+        </ul>
+    </div>
+}

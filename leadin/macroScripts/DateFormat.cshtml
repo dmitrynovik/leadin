@@ -1,0 +1,39 @@
+@*
+Params 
+    DateFormat (mandatory)
+    PropertyAlias (optional)
+*@
+
+@using umbraco.MacroEngines
+@inherits DynamicNodeContext
+@{
+    // Grab our values from the macro parameters
+    var dateFormat = Parameter.DateFormat;
+    var propertyAlias = Parameter.PropertyAlias;
+    
+    // Output the value of the date using the built-in .NET DateTime
+    // functionality to help us format it to the 
+    // date format we want, from the variable we passed in from the
+    // macro thats on the Masterpage.      
+    DateTime result;
+    
+    // Check whether the propertyAlias has value
+    if (!string.IsNullOrEmpty(propertyAlias) && @Model.HasValue(propertyAlias))
+    {
+        // Try parsing the date. This is important becauuse we could accidentally
+        // pass a propertyAlias which is not a DateTime and it could throw an error
+        if (!DateTime.TryParse(@Model.GetProperty(propertyAlias).Value, out result))
+        {
+            // set the result
+            result = DateTime.Parse(@Model.CreateDate.ToString());
+        }
+    }
+    else
+    {
+        // Otherwise, get the CreateDate field
+        result = DateTime.Parse(@Model.CreateDate.ToString());
+    }
+    
+    // Output the result
+    @result.ToString(dateFormat)
+}

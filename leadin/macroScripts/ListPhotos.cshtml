@@ -1,0 +1,26 @@
+@using umbraco.MacroEngines
+@inherits DynamicNodeContext
+@{
+    // Get all child items based on the document type 'CWS_NewsItem' and group them is 4
+    <div class="photoGrid clearfix">
+    @foreach (var group in @Model.CWS_Photo.InGroupsOf(4))
+    {
+        foreach(var item in group)
+        {
+            // find you whether is the first item of the group and set the css class
+            var itemClass = item.IsFirst("first item left", "item left");
+            
+            // If there is not photo, fallback to the placeholder
+            var src = @item.PhotoThumbnail ?? "/images/Placeholders/photo_placeholder.gif";
+            
+            <div class="@itemClass">
+                <a href="@item.Url"><img src="@src" alt="@item.Name"/>@item.Name</a>
+                <span>@item.PhotoText</span>
+            </div>
+        }
+        
+        // Clear after each group of 4
+        <div class="clearBoth">&nbsp;</div>
+    }
+    </div>
+}

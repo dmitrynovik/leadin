@@ -1,0 +1,14 @@
+{
+  "id": "84b63f14-3be5-4ac2-ae11-c508201718b7",
+  "name": "Send email to dmitry.novik@gmail.com when submitted",
+  "form": "d48961b6-161d-4365-aa3b-b00a164d71de",
+  "active": true,
+  "workflowTypeId": "e96badd7-05be-4978-b8d9-b3d733de70a5",
+  "executesOn": "Submitted",
+  "settings": {
+    "Email": "dmitry.novik@gmail.com",
+    "Subject": "the form  was submitted",
+    "Message": "the form  was submitted, this is the list of values it contained, you can turn this email off under workflows in Umbraco Contour"
+  },
+  "sortOrder": 0
+}

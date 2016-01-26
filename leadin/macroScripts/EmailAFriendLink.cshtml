@@ -1,0 +1,9 @@
+@using umbraco.MacroEngines
+@inherits DynamicNodeContext
+@{
+    // We need to build up a URL to our email-a-friend page   
+    var link = string.Concat("/email-a-friend/", @Model.Id.ToString(), ".aspx");
+    <a href="@link" class="rightArrow left">
+      Email this page to a friend
+    </a>
+}

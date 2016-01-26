@@ -1,0 +1,24 @@
+@*
+Params 
+    PropertyAlias (mandatory)
+    AltText (optional but recommended)
+*@
+
+@using umbraco.MacroEngines
+@inherits DynamicNodeContext
+@{
+    // Grab our values from the macro parameters
+    var propertyAlias = Parameter.PropertyAlias;
+    var altText = Parameter.AltText;
+
+    // Ensure the propertyAlias has been set in the Macro parameter and that the
+    // node has that property
+    if (!string.IsNullOrEmpty(propertyAlias) && @Model.HasValue(propertyAlias))
+    {
+        // Get the altText value. Set it to an empty string if null
+        var alt = altText ?? string.Empty;
+        
+        // output the image
+        <img src="@Model.GetProperty(propertyAlias).Value" alt="@alt" />
+    }
+}
