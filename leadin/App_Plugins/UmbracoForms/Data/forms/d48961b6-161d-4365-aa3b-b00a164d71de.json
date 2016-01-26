@@ -104,7 +104,7 @@
                   "fieldTypeId": "023f09ac-1445-4bcb-b8fa-ab49f33bd046",
                   "prevalueSourceId": "00000000-0000-0000-0000-000000000000",
                   "dataSourceFieldKey": null,
-                  "mandatory": false,
+                  "mandatory": true,
                   "regex": null,
                   "requiredErrorMessage": null,
                   "invalidErrorMessage": null,
