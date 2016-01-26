@@ -36,6 +36,17 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <IncludeIisSettings>false</IncludeIisSettings>
+    <PublishDatabaseSettings>
+      <Objects>
+        <ObjectGroup Name="umbracoDbDSN-Deployment" Order="1">
+          <Destination Path="" />
+          <Object Type="DbFullSql">
+            <PreSource Path="Data Source=%28local%29\SQLEXPRESS%3bInitial Catalog=Leadin%3bIntegrated Security=True%3bConnect Timeout=60" ScriptSchema="True" ScriptData="True" CopyAllFullTextCatalogs="False" DriDefaults="True" />
+            <Source Path="obj\Debug\AutoScripts\umbracoDbDSN-Deployment_SchemaAndData.sql" Transacted="True" />
+          </Object>
+        </ObjectGroup>
+      </Objects>
+    </PublishDatabaseSettings>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -606,6 +617,12 @@
     <Content Include="media\1363\blue-background.jpg" />
     <Content Include="media\1363\blue-background_big-thumb.jpg" />
     <Content Include="media\1363\blue-background_thumb.jpg" />
+    <Content Include="media\1364\third-photo.jpg" />
+    <Content Include="media\1364\third-photo_big-thumb.jpg" />
+    <Content Include="media\1364\third-photo_thumb.jpg" />
+    <Content Include="media\1365\sydney-harbour-view.jpg" />
+    <Content Include="media\1365\sydney-harbour-view_big-thumb.jpg" />
+    <Content Include="media\1365\sydney-harbour-view_thumb.jpg" />
     <Content Include="media\171\umbraco_tshirt.jpg" />
     <Content Include="media\171\umbraco_tshirt_thumb.jpg" />
     <Content Include="media\227\warren-buckley.jpg" />
@@ -741,6 +758,7 @@
     <Content Include="macroScripts\XmlSitemap.cshtml" />
     <None Include="Properties\PublishProfiles\leadin-pub01.pubxml" />
     <None Include="Scripts\jquery-1.10.2.intellisense.js" />
+    <Content Include="Scripts\fanoe.js" />
     <Content Include="Scripts\jquery-1.10.2.js" />
     <Content Include="Scripts\jquery-1.10.2.min.js" />
     <None Include="Scripts\jquery.validate-vsdoc.js" />
@@ -3207,7 +3225,7 @@
     <Content Include="umbraco\assets\less\shadow.less" />
     <Content Include="umbraco\assets\less\slider.less" />
     <Content Include="umbraco\Install\Views\Index.cshtml" />
-    <Content Include="umbraco\Install\Views\Web.config" />
+    <None Include="umbraco\Install\Views\Web.config" />
     <Content Include="umbraco\lib\angular-dynamic-locale\tmhDynamicLocale.min.js.map" />
     <Content Include="umbraco\lib\bootstrap-tabdrop\README.md" />
     <Content Include="umbraco\lib\bootstrap\less\accordion.less" />
@@ -3308,7 +3326,7 @@
     <Content Include="umbraco\Webservices\TagsAutoCompleteHandler.ashx" />
     <Content Include="umbraco\Webservices\TreeDataService.ashx" />
     <Content Include="umbraco\Webservices\UltimatePickerAutoCompleteHandler.ashx" />
-    <Content Include="umbraco\Xslt\Web.config" />
+    <None Include="umbraco\Xslt\Web.config" />
     <Content Include="Views\BlogOverview.cshtml" />
     <Content Include="Views\BlogPost.cshtml" />
     <Content Include="Views\Contact.cshtml" />
