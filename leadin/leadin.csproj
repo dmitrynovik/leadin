@@ -432,6 +432,35 @@
     <Content Include="Views\Shared\_Layout.cshtml" />
     <Content Include="Views\Home\Management.cshtml" />
     <Content Include="Views\Home\ContactUs.cshtml" />
+    <Content Include="Views\MacroPartials\InsertUmbracoForm.cshtml" />
+    <Content Include="Views\MacroPartials\RenderUmbracoFormScripts.cshtml" />
+    <Content Include="Views\Partials\BottomNavigation.cshtml" />
+    <Content Include="Views\Partials\Forms\Export\csv.cshtml" />
+    <Content Include="Views\Partials\Forms\Export\html.cshtml" />
+    <Content Include="Views\Partials\Forms\Fieldtypes\FieldType.CheckBox.cshtml" />
+    <Content Include="Views\Partials\Forms\Fieldtypes\FieldType.CheckBoxList.cshtml" />
+    <Content Include="Views\Partials\Forms\Fieldtypes\FieldType.DatePicker.cshtml" />
+    <Content Include="Views\Partials\Forms\Fieldtypes\FieldType.DropDownList.cshtml" />
+    <Content Include="Views\Partials\Forms\Fieldtypes\FieldType.FileUpload.cshtml" />
+    <Content Include="Views\Partials\Forms\Fieldtypes\FieldType.HiddenField.cshtml" />
+    <Content Include="Views\Partials\Forms\Fieldtypes\FieldType.PasswordField.cshtml" />
+    <Content Include="Views\Partials\Forms\Fieldtypes\FieldType.RadioButtonList.cshtml" />
+    <Content Include="Views\Partials\Forms\Fieldtypes\Fieldtype.Recaptcha.cshtml" />
+    <Content Include="Views\Partials\Forms\Fieldtypes\FieldType.Text.cshtml" />
+    <Content Include="Views\Partials\Forms\Fieldtypes\FieldType.Textarea.cshtml" />
+    <Content Include="Views\Partials\Forms\Fieldtypes\FieldType.Textfield.cshtml" />
+    <Content Include="Views\Partials\Forms\Form.cshtml" />
+    <Content Include="Views\Partials\Forms\Script.cshtml" />
+    <Content Include="Views\Partials\Grid\Bootstrap2.cshtml" />
+    <Content Include="Views\Partials\Grid\Bootstrap3.cshtml" />
+    <Content Include="Views\Partials\Grid\Editors\Base.cshtml" />
+    <Content Include="Views\Partials\Grid\Editors\Embed.cshtml" />
+    <Content Include="Views\Partials\Grid\Editors\Macro.cshtml" />
+    <Content Include="Views\Partials\Grid\Editors\Media.cshtml" />
+    <Content Include="Views\Partials\Grid\Editors\Rte.cshtml" />
+    <Content Include="Views\Partials\Grid\Editors\Textstring.cshtml" />
+    <Content Include="Views\Partials\Grid\Fanoe.cshtml" />
+    <Content Include="Views\Partials\MainNavigation.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
