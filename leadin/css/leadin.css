@@ -1,3 +1,6 @@
+.field-validation-error {
+	color: red;
+}
 
 html,
 body,
@@ -930,7 +933,7 @@ nav li > ul > li > ul {
 }
 
 footer {
-	background-image: url('/media/1354/CBD.jpg') !important;
+	background-image: url('/media/1364/third-photo.jpg') !important;
 }
 
 footer ul {
