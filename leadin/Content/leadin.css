@@ -1,4 +1,8 @@
-﻿html,
+﻿.field-validation-error {
+	color: red;
+}
+
+html,
 body,
 header,
 div,

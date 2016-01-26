@@ -6,6 +6,12 @@
 @using Umbraco.Web
 @using ClientDependency.Core.Mvc;
 
+<style>
+    .field-validation-error {
+        color: red;
+    }
+</style>
+
 @model Umbraco.Forms.Mvc.Models.FormViewModel
 @{
     Html.EnableClientValidation(true);
@@ -24,7 +30,7 @@ else
     if (Model.RenderMode == "full" || Model.RenderMode == "form")
     {
          
-         <div id="contour_form_@{@Model.FormName.Replace(" ", "")}" class="contour @Model.CssClass">
+         <div id="contour_form_@{@Model.FormName.Replace(" ", "")}" class="contour form-group @Model.CssClass">
 
              @using (Html.BeginUmbracoForm<Umbraco.Forms.Web.Controllers.UmbracoFormsController>("HandleForm"))
              {
@@ -40,7 +46,7 @@ else
                 
                      @if (string.IsNullOrEmpty(Model.CurrentPage.Caption) == false)
                      {
-                         <h4 class="contourPageName">@Html.Raw(Model.CurrentPage.Caption)</h4>
+                         <h2 class="contourPageName text-center">@Html.Raw(Model.CurrentPage.Caption)</h2>
                      }
                 
                      @if (Model.ShowValidationSummary)
@@ -124,7 +130,9 @@ else
                              }
                              else
                              {
-                                 <input type="submit" class="btn primary" value="@Model.SubmitCaption" name="submit"/>
+                                 <div style="margin-bottom: 1em; margin-top: 1em;">
+                                     <input type="submit" class="btn primary btn-default" value="@Model.SubmitCaption" name="submit" />
+                                 </div>
                              }
                          </div>
                      </div>
